@@ -91,4 +91,5 @@ ENV/
 # emacs autosave files
 *~
 
+static
 data

@@ -4,30 +4,35 @@
 <link rel="stylesheet" href="{{ url_for('static', filename='bootstrap-3.3.6-dist/css/bootstrap.min.css') }}">
 <!--script src="{{ url_for('static', filename='peaks.min.js') }}"></script -->
 <script src="http://wzrd.in/standalone/peaks.js"></script>
-<title></title>
+<title>{{ f.fr.title }}</title>
 </head><body>
 
-<h1>{{ f.fr.title }}</h1>
 
 <div class="container">
+  <h1>{{ f.fr.title }}</h1>
   <div id="peaks-container"></div>
-  <audio id="waveform" controls="controls" style="width: {{ f.width }}pt; margin: 25pt;" src="{{ url_for('static', filename='audio') }}/{{ f.ff.audio_url }}">Your browser does not support the <code>audio</code> element.</audio>
+  <audio id="waveform" controls="controls" style="width: {{ f.width }}pt; margin: 25pt;" src="{{ url_for('static', filename='audio/') }}{{ f.fr.id }}.mp3">Your browser does not support the <code>audio</code> element.</audio>
 </div>
-<!--div>{{ f.fr }}</div -->
-
-<div id="timeline" class="row">{% for s in f.seg %}
-<div class="col-md-2">{{ s }}</div>
-{% endfor %}</div>
 
 <script>
+var p;
 window.onload = (function(Peaks){
-    var p = Peaks.init({
+    p = Peaks.init({
       container: document.querySelector('#peaks-container'),
       mediaElement: document.querySelector('#waveform'),
       height: 200,
       width: {{ f.width }},
-      zoomLevels: 1024
+      zoomLevels: [4096],
+      segments: [{% for line in f.fr.lines %}
+      { startTime: {{ ( line.start_time / 1000 ) }},
+        endTime: {{ line.end_time / 1000 }},
+        editable: false,
+        color: "{{ f.colormap[line.topic] }}",
+        labelText: "{{ line.topic }}"
+      }{% if not loop.last %},{% endif %}
+      {% endfor %}]
     });
+    console.info(p);
 })(peaks.js);
 </script>
 </body>
