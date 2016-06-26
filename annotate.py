@@ -42,10 +42,8 @@ for file_name in file_names:
         # text = TextBlob(line['best_text'], np_extractor=textblob.en.np_extractors.ConllExtractor())
         text = TextBlob(line['best_text'])
 
-        line['noun_phrase'] = text.noun_phrases or [item[0] for item in text.tags if item[1] == 'NNP'] or [item for item in text.tags if item[1] == 'NN']
+        line['noun_phrase'] = text.noun_phrases or [item[0] for item in text.tags if item[1] in ['NN', 'NNP']]
 
-        # soon...
-        
         line_topics = model.transform([line['best_text']]).squeeze()
         line_topics[bad_idx] = 0
         line_topics /= line_topics.sum()
