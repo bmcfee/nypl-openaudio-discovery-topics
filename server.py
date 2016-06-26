@@ -11,6 +11,7 @@ app = Flask(__name__)
 def at():
 
     fo = {
+        'width': '800',
         'ff': { 'audio_url': 'patricia-marx-interviews-john-simon.mp3' },
         'fr': fr,
         'seg': [4, 2, 5, 3, 8]
