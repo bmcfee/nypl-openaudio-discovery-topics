@@ -88,4 +88,8 @@ ENV/
 # Rope project settings
 .ropeproject
 
+# emacs autosave files
+*~
+
+static
 data
