@@ -3,13 +3,13 @@
 
 import json
 import pickle
-from pprint import pprint
-import textblob
 import sys
 import os
+import numpy as np
+import textblob
 
 # How much do we care about global vs local topic distribution?
-GLOBAL_RATIO = 0.25
+GLOBAL_RATIO = 0.5
 
 TextBlob = textblob.TextBlob
 
@@ -22,6 +22,8 @@ with open('base-model-topics.pkl', 'rb') as fdesc:
     topics = pickle.load(fdesc)
 
 
+bad_idx = np.asarray([_ for _ in topics if not topics[_]])
+
 for file_name in file_names:
     with open(file_name) as data_file:
         data = json.load(data_file)
@@ -30,7 +32,9 @@ for file_name in file_names:
 
     # Get the global document
     all_doc = ' '.join([line['best_text'] for line in lines])
-    doc_topics = model.transform([all_doc])
+    doc_topics = model.transform([all_doc]).squeeze()
+    doc_topics[bad_idx] = 0
+    doc_topics /= doc_topics.sum()
 
     # add noun phrases to each line
     for line in lines:
@@ -42,13 +46,11 @@ for file_name in file_names:
 
         # soon...
         
-        line_topics = model.transform([line['best_text']])
+        line_topics = model.transform([line['best_text']]).squeeze()
+        line_topics[bad_idx] = 0
+        line_topics /= line_topics.sum()
 
         mix_topic = (GLOBAL_RATIO * doc_topics + (1 - GLOBAL_RATIO) * line_topics).squeeze()
-        
-        for k in topics:
-            if not topics[k]:
-                mix_topic[k] = 0
         
         line['topic'] = topics[mix_topic.argmax()]
 
