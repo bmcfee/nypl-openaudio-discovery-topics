@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Ken Burnsify</title>
+	<link rel="stylesheet" type="text/css" href="css/style.css">
+</head>
+
+<body>
+
+	<div class="slideshow">
+		<img id="slideshow-0">
+		<img id="slideshow-1">
+		<span class="caption"></span>
+	</div>
+
+	<audio controls id="audio-elt" type="audio/mpeg"></audio>
+
+	<script src="https://code.jquery.com/jquery-2.2.4.min.js"></script>
+
+	<!-- load transcript -->
+	<script>
+	var Transcript = {};
+
+	function init() {
+		var episode_id = '100603_MarkKatz_AlGoreIsSoBoring_MRH1110';
+		// var episode_id = 'patricia-marx-interviews-john-simon';
+
+		var audioElt = document.getElementById('audio-elt');
+		// audioElt.src = './data/audio/' + episode_id + '.mp3';
+		audioElt.src='https://transients-mp3.s3.amazonaws.com/100603_MarkKatz_AlGoreIsSoBoring_MRH1110.mp3';
+		audioElt.load();
+
+		loadTranscript('./data/transcripts/json/' + episode_id);
+	}
+
+	function loadTranscript(episode_id) {
+		var jsonPath = episode_id + '_annotated.json';
+		$.getJSON(jsonPath, function(data) {
+			Transcript = data;
+			Burnsify(Transcript, '#slideshow');
+		});
+	}
+
+	init();
+	</script>
+
+	<script src="js/burnsify.js"></script>
+</body>
+</html>
